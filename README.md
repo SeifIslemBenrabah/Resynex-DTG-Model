@@ -6,8 +6,10 @@ to a clinical milestone.
 
 The architecture is the Neural Boltzmann Machine design of Lang (2023), coupled
 to a DeepHit survival head through a differentiable trajectory-pooling layer.
-This repository is the **research implementation and its evaluation**. The
-platform that serves the trained model lives in a separate repository.
+This repository is the **research implementation and its evaluation**.
+The platform that serves the trained model — six services, a dashboard and
+a REST inference API — lives in
+[Resynex-Platform](https://github.com/SeifIslemBenrabah/Resynex-Platform).
 
 ---
 
