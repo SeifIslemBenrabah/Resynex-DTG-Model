@@ -1,0 +1,48 @@
+# ── Clinical data: NEVER commit ───────────────────────────────────────────
+# PPMI is governed by a Data Use Agreement that forbids redistribution.
+# PBC2 and SUPPORT are public but are downloaded, not vendored.
+data/
+*.csv
+*.tsv
+*.xlsx
+
+# ── Model weights ─────────────────────────────────────────────────────────
+# Attached to GitHub Releases instead: they are tens of megabytes and
+# git is the wrong place for binaries that change every run.
+*.pt
+*.pth
+*.ckpt
+*.npz
+
+# ── Run artifacts ─────────────────────────────────────────────────────────
+# Curated result files live in results/ and are committed deliberately.
+outputs/
+outputs_*/
+*.log
+*_log*.txt
+
+# ── Figures produced by a run ─────────────────────────────────────────────
+*.png
+*.pdf
+*.html
+
+# ── Python ────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+.pytest_cache/
+*.egg-info/
+
+# ── Secrets ───────────────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Editors and OS ────────────────────────────────────────────────────────
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,16 @@
+{
+  "test_rmse": 0.8724156861668693,
+  "test_c_index": 0.8748520391692672,
+  "best_val_c_index": 0.8414664981036662,
+  "checkpoint_epoch": 80,
+  "event_thresh": 25.0,
+  "n_train": 1088,
+  "n_val": 233,
+  "n_test": 233,
+  "d": 69,
+  "c_dim": 9,
+  "T": 6,
+  "nh": 64,
+  "z_dim": 128,
+  "n_params": 1130699
+}

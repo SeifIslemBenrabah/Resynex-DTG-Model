@@ -1,0 +1,14 @@
+{
+  "test_rmse": 0.7669174966274817,
+  "test_c_index": 0.8573692551505546,
+  "best_val_c_index": 0.7754491017964071,
+  "checkpoint_epoch": 30,
+  "n_train": 220,
+  "n_val": 46,
+  "n_test": 46,
+  "d": 11,
+  "c_dim": 4,
+  "T": 6,
+  "n_params": 94589,
+  "dataset": "PBC2 (pbcseq)"
+}

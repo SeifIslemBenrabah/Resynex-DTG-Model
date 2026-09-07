@@ -1,0 +1,10 @@
+{
+  "test_rmse": 0.05444818028419511,
+  "test_c_index": 0.6021224525773009,
+  "best_val_c_index": 0.6101522836028123,
+  "checkpoint_epoch": 30,
+  "dataset": "SUPPORT",
+  "n_train": 6213,
+  "n_val": 1330,
+  "n_test": 1330
+}

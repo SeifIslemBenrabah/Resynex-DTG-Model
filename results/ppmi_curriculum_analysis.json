@@ -1,0 +1,56 @@
+{
+  "checkpoint": "outputs_v4/best_model.pt",
+  "checkpoint_epoch": 80,
+  "n_test_patients": 233,
+  "n_observed_values": 60448,
+  "c_index": {
+    "point": 0.8748520391692672,
+    "ci95": [
+      0.8394422776958005,
+      0.9083591982762209
+    ],
+    "n_bootstrap": 2000
+  },
+  "rmse": {
+    "point": 0.8724156618118286,
+    "ci95": [
+      0.7012973427772522,
+      1.0598996877670288
+    ]
+  },
+  "trajectory_correlation": {
+    "pearson_r": 0.44618508219718933,
+    "spearman_rho": 0.48377871433025976,
+    "per_visit": {
+      "month_0": {
+        "n_obs": 15557,
+        "pearson": 0.6871642470359802
+      },
+      "month_12": {
+        "n_obs": 12650,
+        "pearson": 0.503929078578949
+      },
+      "month_24": {
+        "n_obs": 11096,
+        "pearson": 0.47606658935546875
+      },
+      "month_36": {
+        "n_obs": 8642,
+        "pearson": 0.32255908846855164
+      },
+      "month_48": {
+        "n_obs": 7312,
+        "pearson": 0.32326436042785645
+      },
+      "month_60": {
+        "n_obs": 5191,
+        "pearson": 0.39309272170066833
+      }
+    }
+  },
+  "procova": {
+    "rho": 0.44618508219718933,
+    "variance_retained": 0.8009188724246874,
+    "control_arm_reduction_pct": 19.90811275753126
+  }
+}

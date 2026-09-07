@@ -1,0 +1,14 @@
+{
+  "protocol": "staged (phase1 trajectory, freeze, phase2 TTE head)",
+  "test_rmse": 0.8903249314980303,
+  "test_c_index": 0.8759819218766813,
+  "best_val_c_index": 0.870897597977244,
+  "checkpoint_epoch": 75,
+  "event_thresh": 25.0,
+  "z_dim": 128,
+  "nh": 64,
+  "phase1": 60,
+  "phase2": 240,
+  "seed": 42,
+  "n_params": 1130699
+}
