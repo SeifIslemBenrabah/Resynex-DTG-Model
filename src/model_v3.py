@@ -17,6 +17,10 @@ import numpy as np
 
 from nbm import NBM
 
+# Bound applied to the contrastive-divergence term. Applied through tanh rather
+# than clamp so the gradient survives saturation; see compute_losses.
+_CD_BOUND = 2.0
+
 
 # ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -104,10 +108,20 @@ class TTEHead_v3(nn.Module):
         pmf  = torch.softmax(logits, dim=-1)
         bins = torch.linspace(0, 1, S, device=device)
 
-        # Negative log-likelihood at event bin
         et_idx = (event_times * (S - 1)).long().clamp(0, S - 1)
-        nll    = -torch.log(pmf[torch.arange(B), et_idx] + 1e-8)
-        nll    = (nll * event_inds).mean()
+
+        # Likelihood, DeepHit's two-part form. Event patients are rewarded
+        # for mass at their observed event bin. Censored patients previously
+        # contributed nothing here (only to the ranking term below), so
+        # nothing taught the model to keep predicted-event probability low
+        # for a patient who went years without the event -- this second term
+        # rewards placing the survival mass (the probability of the event
+        # occurring after the patient's last observed, event-free visit)
+        # correctly for them instead.
+        event_nll  = -torch.log(pmf[torch.arange(B), et_idx] + 1e-8)
+        surv_after = 1.0 - torch.cumsum(pmf, dim=-1)
+        censor_nll = -torch.log(surv_after[torch.arange(B), et_idx].clamp(min=1e-8))
+        nll = (event_nll * event_inds + censor_nll * (1.0 - event_inds)).mean()
 
         # Pairwise ranking loss (DeepHit)
         E_T    = (pmf * bins).sum(dim=-1)
@@ -235,7 +249,14 @@ class DTG_v3(nn.Module):
             y_eff   = y * m + b.detach() * (1.0 - m)
             res     = self.nbm.compute_loss(y_eff, ctx_obs, mc_steps=4)
             if torch.isfinite(res["CD_loss"]):
-                cd_loss = cd_loss + res["CD_loss"].clamp(-2.0, 2.0)
+                # Bound the contrastive-divergence term smoothly rather than with
+                # a hard clamp. torch.clamp has exactly zero gradient outside its
+                # range, so once this term saturates the energy model stops
+                # receiving any learning signal at all while still appearing in
+                # the reported loss. tanh has the same bounding effect and keeps
+                # a non-zero gradient everywhere, so a saturated step slows the
+                # energy model rather than switching it off.
+                cd_loss = cd_loss + _CD_BOUND * torch.tanh(res["CD_loss"] / _CD_BOUND)
 
             n_steps += 1
 

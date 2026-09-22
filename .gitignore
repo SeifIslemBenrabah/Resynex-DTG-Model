@@ -1,10 +1,12 @@
 # ── Clinical data: NEVER commit ───────────────────────────────────────────
-# PPMI is governed by a Data Use Agreement that forbids redistribution.
-# PBC2 and SUPPORT are public but are downloaded, not vendored.
+# PPMI and ADNI are each governed by their own Data Use Agreement that
+# forbids redistribution. PBC2 and SUPPORT are public but are downloaded,
+# not vendored.
 data/
 *.csv
 *.tsv
 *.xlsx
+*.rda
 
 # ── Model weights ─────────────────────────────────────────────────────────
 # Attached to GitHub Releases instead: they are tens of megabytes and

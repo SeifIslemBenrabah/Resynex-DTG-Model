@@ -1,0 +1,51 @@
+{
+  "ckpts": [
+    "outputs_final_multiseed/seed123/model.pt",
+    "outputs_final_multiseed/seed42/model.pt",
+    "outputs_final_multiseed/seed456/model.pt",
+    "outputs_final_multiseed/seed789/model.pt",
+    "outputs_final_multiseed/seed1000/model.pt"
+  ],
+  "K": 5,
+  "split_seed": 42,
+  "c_index": 0.909700637984623,
+  "r2": 0.8638153076171875,
+  "calibration": {
+    "coverage": {
+      "0.5": 0.5771513353115727,
+      "0.8": 0.8234421364985163,
+      "0.9": 0.9091988130563798,
+      "0.95": 0.9421364985163204
+    },
+    "pit_mean": 0.5272284746170044,
+    "ks": 0.07565280945435476,
+    "n_cells": 3370
+  },
+  "mmd_joint7": {
+    "mmd2": 0.001080550835104077,
+    "mmd2_std": 0.002026493693638407,
+    "floor": -0.000409682554891333,
+    "floor_std": 0.005168877322489949,
+    "ratio": 1080550.835104077,
+    "n_rows": 164,
+    "n_repeats": 20
+  },
+  "mmd_csf_panel": {
+    "mmd2": 0.010805768088903277,
+    "mmd2_std": 0.004449853734876631,
+    "floor": -0.0002358681260375306,
+    "floor_std": 0.005569425257882342,
+    "ratio": 10805768.088903276,
+    "n_rows": 222,
+    "n_repeats": 20
+  },
+  "mmd_datscan_panel": {
+    "mmd2": -0.0001554550249238673,
+    "mmd2_std": 0.0006314259243177911,
+    "floor": -0.00021738528885180132,
+    "floor_std": 0.0011339789879310398,
+    "ratio": -155455.0249238673,
+    "n_rows": 588,
+    "n_repeats": 20
+  }
+}

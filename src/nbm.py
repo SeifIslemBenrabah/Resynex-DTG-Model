@@ -37,8 +37,16 @@ class PrecisionNet(nn.Module):
     """Maps context x (nx) -> precision (inverse variance) of visible units (ny).
     Clips in log-space to [log(pmin), log(pmax)] then exponentiates.
     """
-    def __init__(self, nx, ny, pmin=1e-3, pmax=1e3):
+    def __init__(self, nx, ny, pmin=1e-2, pmax=1e2):
         super().__init__()
+        # These bounds apply to the precision of a *standardized* visible unit,
+        # whose variance is 1 by construction, so precision near 1 is the
+        # correct scale and the bounds need only cover two orders of magnitude
+        # either side. The wider [1e-3, 1e3] lets the Gibbs sampler's noise
+        # term, which scales as 1/sqrt(precision), grow about 31-fold in a
+        # single step; the chain then diverges, the negative-phase free energy
+        # explodes, and the contrastive-divergence term saturates whatever
+        # bound is placed on it, which zeroes the energy model's gradient.
         self.net = nn.Sequential(nn.Linear(nx, 32), nn.ReLU(), nn.Linear(32, ny))
         self.lpmin = math.log(pmin)
         self.lpmax = math.log(pmax)
@@ -120,7 +128,11 @@ class NBM(nn.Module):
 
         pos = self._free_energy(y.flatten(start_dim=1), bias, precision, weights)
         neg = self._free_energy(y_model,                 bias, precision, weights)
-        cd_loss = (pos - neg).mean()
+        # Per-visible-unit, so the term is an energy per dimension rather than a
+        # sum over all of them. Without this the contrastive term arrives two to
+        # three orders of magnitude larger than the reconstruction terms it is
+        # summed with, and no fixed loss weight can balance the two.
+        cd_loss = (pos - neg).mean() / y.shape[-1]
 
         # Diagnostic auxiliaries
         diff     = y.flatten(start_dim=1) - bias

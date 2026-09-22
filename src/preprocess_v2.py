@@ -14,9 +14,10 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
-# Point PPMI_DATA_DIR at your approved PPMI export. The data is not
-# redistributable, so no default location inside the repository exists.
-DATA_DIR = os.environ.get("PPMI_DATA_DIR", os.path.join("data", "ppmi"))
+# PPMI is governed by a Data Use Agreement that forbids redistribution (see
+# .gitignore); place your own approved export under data/ppmi/, or point
+# PPMI_DATA_DIR at wherever you keep it.
+DATA_DIR = os.environ.get("PPMI_DATA_DIR", "data/ppmi")
 
 # ── Visit mapping ──────────────────────────────────────────────────────────────
 VISIT_MAP    = {"BL": 0, "V04": 12, "V06": 24, "V08": 36, "V10": 48, "V12": 60}
@@ -44,6 +45,19 @@ DATSCAN    = ["MIA_CAUDATE_L", "MIA_CAUDATE_R", "MIA_PUTAMEN_L", "MIA_PUTAMEN_R"
 
 FEAT_COLS  = UPDRS_ITEMS + COGNITIVE + CSF_COLS + DATSCAN   # d = 59+3+3+4 = 69
 d          = len(FEAT_COLS)
+
+# ── Legal value ranges, used to reject sentinel codes ──────────────────────────
+#
+# PPMI records a rating that could not be obtained as 101 ("unable to rate"),
+# not as a blank. Read naively, 101 enters a 0-4 ordinal item as if it were a
+# score: it multiplies the item's standard deviation by about ten, collapses the
+# real 0-4 variation to a fraction of a standard deviation once standardized,
+# and propagates into every summed score derived from the item. Any value
+# outside the instrument's documented range is therefore treated as missing,
+# which is what it means. Continuous assay and imaging measures have no fixed
+# legal range and are left unconstrained.
+VALID_RANGE = {c: (0, 4) for c in UPDRS_ITEMS}     # MDS-UPDRS items are 0-4
+VALID_RANGE.update({"moca": (0, 30), "gds": (0, 15), "ess": (0, 24)})
 
 # ── Static patient features ────────────────────────────────────────────────────
 STATIC_COLS = ["age", "SEX", "EDUCYRS", "duration_yrs",
@@ -142,6 +156,7 @@ def load_ppmi_v2(data_dir=DATA_DIR):
     pat2idx = {p: i for i, p in enumerate(patients)}
     vm_list = TIMEPOINTS
 
+    n_rejected = {}
     for _, row in df.iterrows():
         i  = pat2idx[row["PATNO"]]
         ti = vm_list.index(row["visit_month"])
@@ -149,10 +164,22 @@ def load_ppmi_v2(data_dir=DATA_DIR):
             v = row.get(col, np.nan)
             if pd.notna(v):
                 try:
-                    X[i, ti, j] = float(v)
-                    M[i, ti, j] = 1.0
+                    fv = float(v)
                 except (ValueError, TypeError):
-                    pass
+                    continue
+                lo, hi = VALID_RANGE.get(col, (None, None))
+                if lo is not None and not (lo - 1e-6 <= fv <= hi + 1e-6):
+                    n_rejected[col] = n_rejected.get(col, 0) + 1
+                    continue          # sentinel code, not a score: leave masked
+                X[i, ti, j] = fv
+                M[i, ti, j] = 1.0
+
+    if n_rejected:
+        tot = sum(n_rejected.values())
+        worst = sorted(n_rejected.items(), key=lambda kv: -kv[1])[:5]
+        print(f"  rejected {tot} out-of-range cells across {len(n_rejected)} "
+              f"features (sentinel codes); worst: "
+              + ", ".join(f"{k}={v}" for k, v in worst))
 
     # ── Static features ───────────────────────────────────────────────────────
     static_df = df.groupby("PATNO").first().reset_index()
