@@ -1,5 +1,4 @@
 # Resynex DTG — research implementation
-# CPU-only; no GPU required to reproduce any reported result.
 
 torch>=2.0
 numpy>=1.24

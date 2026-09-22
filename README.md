@@ -284,9 +284,8 @@ python src/analyze_v4.py \
     --ckpt outputs_v4/best_model.pt --out outputs_v4/analysis.json
 ```
 
-A single objective-endpoint run (70 epochs) takes roughly 10 minutes on CPU; a
-full-panel run (300 epochs) takes 20–30 minutes. No GPU is required, which is
-deliberate: every result here is reproducible on ordinary hardware.
+A single objective-endpoint run (70 epochs) takes roughly 10 minutes; a
+full-panel run (300 epochs) takes 20–30 minutes.
 
 `--seed` governs parameter initialisation, data order, the artificial masking
 in the autoencoder, **and the Gibbs chain** — the last is the one usually left
